@@ -30,7 +30,7 @@ class GlobalLauncher(QDialog):
     def setup_system_tray_icon(self):
         self.global_launcher_main_menu = QMenu()
         self.close_action = QAction("Close", self, triggered=self.close)
-        self.close_action.setIcon(QIcon(os.path.join(self.icon_path, "default.png")))
+        self.close_action.setIcon(QIcon(os.path.join(self.icon_path, "close.png")))
         self.global_launcher_main_menu.addAction(self.close_action)
 
 
