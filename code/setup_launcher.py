@@ -5,17 +5,19 @@ import sys
 import ui.setup_ui as launcher_ui
 import json
 import os
+import re
 
 JSON_LOCATION = os.path.join(os.path.dirname("__file__"), "../", "resources", "app_json")
 ICON_LOCATION = os.path.join(os.path.dirname("__file__"), "../", "resources", "icon_collection")
 DEFAULT_JSON_OBJECT = {"app": "",
                        "app_name": "",
-                       "app_icon": "",
+                       "app_icon": "default.png",
                        "group_name": "",
-                       "group_icon": "",
+                       "group_icon": "default.png",
                        "app_executable": {"windows": "",
                                           "linux": "",
-                                          "darwin": ""}
+                                          "darwin": ""},
+                       "accept_drops": False
                        }
 
 
@@ -29,10 +31,32 @@ class SetupLauncher(launcher_ui.Ui_Dialog, QDialog):
         # Initial function
         self.initialize_ui(False)
         # Signal Slots
-        self.app_lineEdit.editingFinished.connect(lambda: self.initialize_ui(True))
+        self.app_lineEdit.textEdited.connect(self.enable_app_icon)
+        self.group_lineEdit.textEdited.connect(self.enable_group_icon)
         self.appicon_pushButton.clicked.connect(lambda: self.get_icon_path("app"))
         self.groupicon_pushButton.clicked.connect(lambda: self.get_icon_path("group"))
         self.cancel_pushButton.clicked.connect(self.close)
+        self.windows_lineEdit.textEdited.connect(self.executable_populate)
+        self.mac_lineEdit.textEdited.connect(self.executable_populate)
+        self.linux_lineEdit.textEdited.connect(self.executable_populate)
+
+        self.app_json = DEFAULT_JSON_OBJECT
+
+
+    def acceptDrops(self):
+        if self.acceptdrops_checkBox.isChecked():
+            self.accept_drop = True
+        else:
+            self.accept_drop = False
+
+    def enable_app_icon(self):
+        self.appicon_pushButton.setEnabled(True)
+        self.app_name = str(self.app_lineEdit.text())
+        self.group_lineEdit.setEnabled(True)
+
+    def enable_group_icon(self):
+        self.groupicon_pushButton.setEnabled(True)
+        self.group_name = str(self.group_lineEdit.text())
 
     def get_icon_path(self, counter):
         if counter == "app":
@@ -44,12 +68,30 @@ class SetupLauncher(launcher_ui.Ui_Dialog, QDialog):
             self.groupicon_pushButton.setIcon(QIcon(self.group_icon_path))
             self.groupicon_pushButton.setIconSize(QSize(10, 10))
 
+    def executable_populate(self):
+        if self.sender().objectName() == "windows_lineEdit":
+            self.windows_exec = str(self.sender().text()).replace('"', "")
+
+        if self.sender().objectName() == "linux_lineEdit":
+            self.linux_exec = str(self.sender().text()).replace('"', "")
+
+        if self.sender().objectName() == "mac_lineEdit":
+            self.mac_exec = str(self.sender().text()).replace('"', "")
+
+        self.ok_pushButton.setEnabled(True)
 
     def initialize_ui(self, counter):
         self.ok_pushButton.setEnabled(counter)
         self.appicon_pushButton.setEnabled(counter)
         self.group_lineEdit.setEnabled(counter)
         self.groupicon_pushButton.setEnabled(counter)
+
+    def save_config_file(self):
+        self.app_json["app"] = self.app_name
+        self.app_json["app_name"] = re.replace("[ \S]")
+
+        self.close()
+
 
 def main():
     app_obj = QApplication(sys.argv)

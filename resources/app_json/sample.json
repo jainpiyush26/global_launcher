@@ -1,0 +1,11 @@
+{ "app": "sample app",
+  "app_name": "sample_app",
+  "app_icon": "default.png",
+  "group": "Sample Group",
+  "group_icon": "default_group.png",
+  "app_executable": {
+    "windows": "sample_app.py",
+    "linux": "sample_app.py",
+    "darwin": "sample_app.py"},
+  "accept_drops": true
+ }
