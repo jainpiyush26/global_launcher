@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/local/bin/pythonw
 from PySide.QtCore import *
 from PySide.QtGui import *
 import os
@@ -79,7 +79,7 @@ class GlobalLauncher(QDialog):
 
     def prepare_app_actions(self):
         self.app_json_folder = os.path.join(RESOURCES_PATH, "app_json")
-        json_files = [os.path.join(self.app_json_folder, items) for items in os.listdir(self.app_json_folder) if items.endswith(".json")]
+        json_files = [os.path.join(self.app_json_folder, items) for items in os.listdir(self.app_json_folder) if items.endswith(".json") and items != 'sample.json']
         for json_file in json_files:
             try:
                 with open(json_file) as file_open:
@@ -127,7 +127,6 @@ class GlobalLauncher(QDialog):
 def main():
     launcherwindow = GlobalLauncher()
     launcherwindow.show()
-
     app.exec_()
 
 
